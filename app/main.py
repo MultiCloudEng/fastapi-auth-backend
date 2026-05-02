@@ -5,7 +5,6 @@ from app.api.users import router as users_router
 from app.api.auth import router as auth_router
 from app.db.init_db import init_db
 
-
 app = FastAPI(
     title="Professional Backend",
     version="1.0"
@@ -16,9 +15,8 @@ init_db()
 
 # routers
 app.include_router(health_router)
-app.include_router(users_router)
-app.include_router(auth_router)
-
+app.include_router(users_router, prefix="/users", tags=["Users"])
+app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 
 @app.get("/")
 def root():

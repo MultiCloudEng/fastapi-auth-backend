@@ -8,7 +8,8 @@ from app.db.session import get_db
 from app.models.user import User
 from app.schemas.user import UserCreate, UserResponse
 
-router = APIRouter(prefix="/users", tags=["Users"])
+
+router = APIRouter()
 
 
 @router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
@@ -46,3 +47,12 @@ def list_users(
 @router.get("/me", response_model=UserResponse)
 def read_me(current_user: User = Depends(get_current_user)):
     return current_user
+
+@router.get("/dashboard")
+def get_dashboard(current_user = Depends(get_current_user)):
+    return {
+        "email": current_user.email,
+        "is_active": current_user.is_active,
+        "is_admin": current_user.is_admin
+    }
+    
