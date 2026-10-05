@@ -1,27 +1,21 @@
-import os
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
 from typing import Generator
 
-# Get DATABASE_URL from environment (Render will provide it)
-DATABASE_URL = os.getenv("DATABASE_URL")
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
-# Fallback for local development (optional)
-if not DATABASE_URL:
-    DATABASE_URL = "sqlite:///./test.db"
+from app.core.config import DATABASE_URL
 
-engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+# SQLite needs this flag when used from FastAPI's thread pool.
+connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
+engine = create_engine(DATABASE_URL, pool_pre_ping=True, connect_args=connect_args)
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
 
-def get_db() -> Generator:
+def get_db() -> Generator[Session, None, None]:
     db = SessionLocal()
     try:
         yield db
