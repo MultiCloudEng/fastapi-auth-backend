@@ -28,3 +28,9 @@ class UserResponse(BaseModel):
     email: EmailStr
     is_active: bool
     is_admin: bool
+
+
+class DashboardResponse(BaseModel):
+    email: EmailStr
+    is_active: bool
+    is_admin: bool

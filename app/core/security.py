@@ -1,14 +1,21 @@
-from passlib.context import CryptContext
+"""Password hashing with bcrypt (used directly; passlib is unmaintained).
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+Hashes created earlier through passlib use the same "$2b$" bcrypt format,
+so existing users can still log in.
+"""
+import bcrypt
 
 
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
+    except ValueError:
+        # Malformed or non-bcrypt hash stored in the database.
+        return False
 
 
 # Used to keep login timing similar when the email does not exist.

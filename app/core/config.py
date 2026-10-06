@@ -57,3 +57,8 @@ SECRET_KEY: str = _require_secret_key()
 ALGORITHM: str = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES: int = _int_env("ACCESS_TOKEN_EXPIRE_MINUTES", 60)
 DATABASE_URL: str = _database_url()
+
+# Brute-force protection for /auth/login (failed attempts per window).
+LOGIN_MAX_ATTEMPTS_PER_EMAIL: int = _int_env("LOGIN_MAX_ATTEMPTS_PER_EMAIL", 5)
+LOGIN_MAX_ATTEMPTS_PER_IP: int = _int_env("LOGIN_MAX_ATTEMPTS_PER_IP", 20)
+LOGIN_WINDOW_SECONDS: int = _int_env("LOGIN_WINDOW_SECONDS", 300)

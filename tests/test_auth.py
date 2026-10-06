@@ -71,13 +71,14 @@ def test_inactive_user_with_wrong_password_is_not_revealed(client):
 
 
 def test_me_requires_token(client):
-    assert client.get("/me").status_code == 401
+    assert client.get("/users/me").status_code == 401
+    assert client.get("/users/").status_code == 401
 
 
 def test_me_with_valid_token(client):
     register(client)
     token = login(client).json()["access_token"]
-    r = client.get("/me", headers=auth_header(token))
+    r = client.get("/users/me", headers=auth_header(token))
     assert r.status_code == 200
     assert r.json()["email"] == "alice@example.com"
 
@@ -85,7 +86,7 @@ def test_me_with_valid_token(client):
 def test_expired_token_is_rejected(client):
     register(client)
     token = create_access_token({"sub": "1"}, expires_minutes=-1)
-    assert client.get("/me", headers=auth_header(token)).status_code == 401
+    assert client.get("/users/me", headers=auth_header(token)).status_code == 401
 
 
 def test_token_signed_with_other_key_is_rejected(client):
@@ -95,21 +96,21 @@ def test_token_signed_with_other_key_is_rejected(client):
         "CHANGE_ME_SUPER_SECRET_123456789",  # the old hardcoded key
         algorithm="HS256",
     )
-    assert client.get("/me", headers=auth_header(forged)).status_code == 401
+    assert client.get("/users/me", headers=auth_header(forged)).status_code == 401
 
 
 def test_token_with_non_numeric_sub_is_rejected(client):
     token = create_access_token({"sub": "not-a-number"})
-    assert client.get("/me", headers=auth_header(token)).status_code == 401
+    assert client.get("/users/me", headers=auth_header(token)).status_code == 401
 
 
 def test_list_users_requires_admin(client):
     register(client)
     token = login(client).json()["access_token"]
-    assert client.get("/", headers=auth_header(token)).status_code == 403
+    assert client.get("/users/", headers=auth_header(token)).status_code == 403
 
     make_admin("alice@example.com")
-    r = client.get("/", headers=auth_header(token))
+    r = client.get("/users/", headers=auth_header(token))
     assert r.status_code == 200
     assert len(r.json()) == 1
 
@@ -118,4 +119,4 @@ def test_inactive_user_token_is_rejected(client):
     register(client)
     token = login(client).json()["access_token"]
     deactivate("alice@example.com")
-    assert client.get("/me", headers=auth_header(token)).status_code == 403
+    assert client.get("/users/me", headers=auth_header(token)).status_code == 403
