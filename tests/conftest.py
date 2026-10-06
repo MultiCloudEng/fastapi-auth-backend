@@ -19,8 +19,11 @@ from app.models.user import User  # noqa: E402
 
 @pytest.fixture(autouse=True)
 def clean_db():
+    from app.api.auth import login_limiter
+
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
+    login_limiter.clear()
     yield
 
 
@@ -30,7 +33,7 @@ def client():
 
 
 def register(client, email="alice@example.com", password="correct-horse-1"):
-    return client.post("/", json={"email": email, "password": password})
+    return client.post("/users/", json={"email": email, "password": password})
 
 
 def login(client, email="alice@example.com", password="correct-horse-1"):

@@ -1,3 +1,5 @@
+"""One-off migration used once on the deployed PostgreSQL database to add the
+is_admin column. Kept for reference; new databases get the column from the model."""
 from sqlalchemy import text
 from app.db.session import engine
 
