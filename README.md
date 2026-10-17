@@ -1,4 +1,5 @@
 # FastAPI Auth Backend
+> Built with AI assistance (Claude).
 
 A REST API for user registration and login with JWT access tokens, bcrypt password hashing and role-based access (user/admin). Built with FastAPI and SQLAlchemy; SQLite locally, PostgreSQL in deployment (Render).
 
